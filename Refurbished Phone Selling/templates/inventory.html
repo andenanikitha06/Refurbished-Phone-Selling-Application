@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory - Refurbished Phone Manager{% endblock %}
+
+{% block content %}
+<!--
+inventory.html-->
+<div class="inventory-page">
+    <div class="page-header">
+        <h1>Phone Inventory</h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="toggleBulkUpload()">
+                <i class="fas fa-upload"></i> Bulk Upload
+            </button>
+            <button class="btn btn-primary" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Add Phone
+            </button>
+        </div>
+    </div>
+
+    <!-- Bulk Upload Section -->
+    <div class="bulk-upload-section" id="bulk-upload-section" style="display: none;">
+        <div class="card">
+            <div class="card-header">
+                <h3>Bulk Upload Phones</h3>
+                <button class="btn-close" onclick="toggleBulkUpload()">&times;</button>
+            </div>
+            <div class="card-body">
+                <div class="upload-area">
+                    <input type="file" id="bulk-file" accept=".csv" style="display: none;">
+                    <div class="upload-placeholder" onclick="document.getElementById('bulk-file').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload CSV file</p>
+                        <small>Expected columns: model_name, brand, condition, storage, color, stock_quantity, base_price</small>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="uploadBulkFile()">Upload Phones</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="filters-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-input" placeholder="Search phones by model or brand...">
+        </div>
+        
+        <div class="filters">
+            <select id="condition-filter">
+                <option value="">All Conditions</option>
+                <option value="New">New</option>
+                <option value="Excellent">Excellent</option>
+                <option value="Good">Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Poor">Poor</option>
+            </select>
+            
+            <select id="platform-filter">
+                <option value="">All Platforms</option>
+                <option value="X">Platform X</option>
+                <option value="Y">Platform Y</option>
+                <option value="Z">Platform Z</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Phones Table -->
+    <div class="table-container">
+        <table class="phones-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Brand</th>
+                    <th>Condition</th>
+                    <th>Storage</th>
+                    <th>Stock</th>
+                    <th>Base Price</th>
+                    <th>Platform Listings</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="phones-tbody">
+                <!-- Phone rows will be loaded here -->
+            </tbody>
+        </table>
+        
+        <div class="loading" id="loading" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i> Loading phones...
+        </div>
+        
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <i class="fas fa-box-open"></i>
+            <h3>No phones found</h3>
+            <p>Add some phones to get started or adjust your search filters.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Phone Modal -->
+<div class="modal" id="phone-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">Add New Phone</h2>
+            <button class="btn-close" onclick="closeModal()">&times;</button>
+        </div>
+        
+        <form id="phone-form">
+            <input type="hidden" id="phone-id">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="model-name">Model Name *</label>
+                    <input type="text" id="model-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="brand">Brand *</label>
+                    <input type="text" id="brand" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="condition">Condition *</label>
+                    <select id="condition" required>
+                        <option value="">Select condition</option>
+                        <option value="New">New</option>
+                        <option value="Excellent">Excellent</option>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair</option>
+                        <option value="Poor">Poor</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="storage">Storage</label>
+                    <input type="text" id="storage" placeholder="e.g., 128GB">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="color">Color</label>
+                    <input type="text" id="color" placeholder="e.g., Space Gray">
+                </div>
+                
+                <div class="form-group">
+                    <label for="stock-quantity">Stock Quantity</label>
+                    <input type="number" id="stock-quantity" min="0" value="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="base-price">Base Price ($) *</label>
+                <input type="number" id="base-price" step="0.01" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="specifications">Specifications</label>
+                <textarea id="specifications" placeholder="Additional specifications..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="tags">Tags</label>
+                <input type="text" id="tags" placeholder="e.g., refurbished, unlocked">
+            </div>
+            
+            <div class="platform-pricing" id="platform-pricing">
+                <h3>Platform Pricing Preview</h3>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h4>Platform X (10% fee)</h4>
+                        <p class="price" id="price-x">$0.00</p>
+                    </div>
+                    <div class="pricing-card">
+                        <h4>Platform Y (8% + $2)</h4>
+                        <p class="price" id="price-y">$0.00</p>
+                    </div>
+                    <div class="pricing-card">
+                        <h4>Platform Z (12% fee)</h4>
+                        <p class="price" id="price-z">$0.00</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <span id="submit-text">Add Phone</span>
+                    <i class="fas fa-spinner fa-spin" id="submit-spinner" style="display: none;"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- List Phone Modal -->
+<div class="modal" id="list-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>List Phone on Platform</h2>
+            <button class="btn-close" onclick="closeListModal()">&times;</button>
+        </div>
+        
+        <div class="list-phone-content">
+            <div class="phone-info" id="list-phone-info">
+                <!-- Phone details will be loaded here -->
+            </div>
+            
+            <div class="platform-selection">
+                <h3>Select Platform</h3>
+                <div class="platform-options" id="platform-options">
+                    <!-- Platform options will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeListModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="confirmListing()">
+                    <span id="list-text">List Phone</span>
+                    <i class="fas fa-spinner fa-spin" id="list-spinner" style="display: none;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Refurbished Phone Manager{% endblock %}
+
+<!--
+login.html-->
+{% block content %}
+<div class="login-container">
+    <div class="login-form">
+        <div class="form-header">
+            <i class="fas fa-mobile-alt"></i>
+            <h2>Phone Manager Login</h2>
+            <p>Manage your refurbished phone inventory</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" required placeholder="Enter username">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        
+        <div class="demo-credentials">
+            <p><strong>Demo Credentials:</strong></p>
+            <p>Username: <code>admin</code></p>
+            <p>Password: <code>password123</code></p>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}

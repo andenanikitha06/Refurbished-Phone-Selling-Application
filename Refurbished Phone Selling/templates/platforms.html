@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Platforms - Refurbished Phone Manager{% endblock %}
+
+{% block content %}
+<!--
+plaform.html-->
+<div class="platforms-page">
+    <div class="page-header">
+        <h1>Platform Management</h1>
+        <p>Manage listings across different e-commerce platforms</p>
+    </div>
+
+    <div class="platform-stats" id="platform-stats">
+        <!-- Platform statistics will be loaded here -->
+    </div>
+
+    <div class="platform-details">
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="platform-info">
+                    <h2>Platform X</h2>
+                    <p>Fee Structure: 10% commission</p>
+                    <p>Supported Conditions: New, Good, Scrap</p>
+                </div>
+                <div class="platform-status active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Active</span>
+                </div>
+            </div>
+            
+            <div class="platform-metrics">
+                <div class="metric">
+                    <h3 id="platform-x-total">0</h3>
+                    <p>Total Products</p>
+                </div>
+                <div class="metric">
+                    <h3 id="platform-x-listed">0</h3>
+                    <p>Listed</p>
+                </div>
+                <div class="metric">
+                    <h3 id="platform-x-price">$0.00</h3>
+                    <p>Avg Price</p>
+                </div>
+            </div>
+            
+            <div class="platform-actions">
+                <button class="btn btn-primary" onclick="bulkList('X')">
+                    <i class="fas fa-list"></i> Bulk List
+                </button>
+                <button class="btn btn-secondary" onclick="updatePrices('X')">
+                    <i class="fas fa-sync"></i> Update Prices
+                </button>
+            </div>
+        </div>
+
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="platform-info">
+                    <h2>Platform Y</h2>
+                    <p>Fee Structure: 8% + $2 fixed fee</p>
+                    <p>Supported Conditions: 3 stars, 2 stars, 1 star</p>
+                </div>
+                <div class="platform-status active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Active</span>
+                </div>
+            </div>
+            
+            <div class="platform-metrics">
+                <div class="metric">
+                    <h3 id="platform-y-total">0</h3>
+                    <p>Total Products</p>
+                </div>
+                <div class="metric">
+                    <h3 id="platform-y-listed">0</h3>
+                    <p>Listed</p>
+                </div>
+                <div class="metric">
+                    <h3 id="platform-y-price">$0.00</h3>
+                    <p>Avg Price</p>
+                </div>
+            </div>
+            
+            <div class="platform-actions">
+                <button class="btn btn-primary" onclick="bulkList('Y')">
+                    <i class="fas fa-list"></i> Bulk List
+                </button>
+                <button class="btn btn-secondary" onclick="updatePrices('Y')">
+                    <i class="fas fa-sync"></i> Update Prices
+                </button>
+            </div>
+        </div>
+
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-icon">
+                    <i class="fas fa-marketplace"></i>
+                </div>
+                <div class="platform-info">
+                    <h2>Platform Z</h2>
+                    <p>Fee Structure: 12% commission</p>
+                    <p>Supported Conditions: New, As New, Good</p>
+                </div>
+                <div class="platform-status active">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Active</span>
+                </div>
+            </div>
+            
+            <div class="platform-metrics">
+                <div class="metric">
+                    <h3 id="platform-z-total">0</h3>
+                    <p>Total Products</p>
+                </div>
+                <div class="metric">
+                    <h3 id="platform-z-listed">0</h3>
+                    <p>Listed</p>
+                </div>
+                <div class="metric">
+                    <h3 id="platform-z-price">$0.00</h3>
+                    <p>Avg Price</p>
+                </div>
+            </div>
+            
+            <div class="platform-actions">
+                <button class="btn btn-primary" onclick="bulkList('Z')">
+                    <i class="fas fa-list"></i> Bulk List
+                </button>
+                <button class="btn btn-secondary" onclick="updatePrices('Z')">
+                    <i class="fas fa-sync"></i> Update Prices
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="listing-management">
+        <div class="section-header">
+            <h2>Listing Management</h2>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="showProfitabilityAnalysis()">
+                    <i class="fas fa-chart-line"></i> Profitability Analysis
+                </button>
+            </div>
+        </div>
+
+        <div class="listing-filters">
+            <select id="platform-filter">
+                <option value="">All Platforms</option>
+                <option value="X">Platform X</option>
+                <option value="Y">Platform Y</option>
+                <option value="Z">Platform Z</option>
+            </select>
+            
+            <select id="listing-status">
+                <option value="">All Status</option>
+                <option value="listed">Listed</option>
+                <option value="not-listed">Not Listed</option>
+            </select>
+            
+            <input type="text" id="search-listings" placeholder="Search phones...">
+        </div>
+
+        <div class="listings-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phone</th>
+                        <th>Platform X</th>
+                        <th>Platform Y</th>
+                        <th>Platform Z</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="listings-tbody">
+                    <!-- Listing rows will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Profitability Analysis Modal -->
+<div class="modal" id="profitability-modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <h2>Profitability Analysis</h2>
+            <button class="btn-close" onclick="closeProfitabilityModal()">&times;</button>
+        </div>
+        
+        <div class="analysis-content">
+            <div class="analysis-summary">
+                <div class="summary-card">
+                    <h3>Profitable Listings</h3>
+                    <div class="summary-stats" id="profitable-stats">
+                        <!-- Stats will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <h3>Unprofitable Listings</h3>
+                    <div class="summary-stats" id="unprofitable-stats">
+                        <!-- Stats will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-details">
+                <h3>Detailed Analysis</h3>
+                <div class="analysis-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Phone</th>
+                                <th>Base Price</th>
+                                <th>Platform X</th>
+                                <th>Platform Y</th>
+                                <th>Platform Z</th>
+                                <th>Best Platform</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analysis-tbody">
+                            <!-- Analysis rows will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/platforms.js') }}"></script>
+{% endblock %}
